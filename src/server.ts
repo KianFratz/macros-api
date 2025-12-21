@@ -8,8 +8,4 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-app.get("/", (req: Request, res: Response) => {
-    res.send("Hello from server.ts!");
-})
-
 export default app;
