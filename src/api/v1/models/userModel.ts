@@ -30,7 +30,7 @@ export const updateUserService = async (
 ): Promise<User> => {
   const updatedUser = await pool.query(
     "UPDATE users SET name=$1, email=$2 WHERE id=$3 RETURNING *",
-    [id, name, email]
+    [name, email, id] // id is in the last because id is equals to $3
   );
   return updatedUser.rows[0];
 };
