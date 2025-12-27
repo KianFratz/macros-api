@@ -7,6 +7,7 @@ import {
   getCategoryByIdService,
   updateCategoryService,
 } from "../models/categoryModel.js";
+import { findCategoryByName } from "../handler/findCategoryByName.js";
 
 export const createCategory = async (
   req: Request,
@@ -16,8 +17,12 @@ export const createCategory = async (
   const { name } = req.body;
 
   try {
+    const existingCategory = await findCategoryByName(name);
+    if (existingCategory) return handleResponse(res, 400, "Category already exists");
+
     const newCategory = await createCategoryService(name);
     handleResponse(res, 201, "Category created successfully", newCategory);
+
   } catch (error) {
     next(error);
   }
@@ -63,6 +68,8 @@ export const updateCategory = async (
       Number(req.params.id),
       name
     );
+    if (!updateCategory) return handleResponse(res, 404, "Category not found");
+
     handleResponse(res, 200, "Category updated successfully", updateCategory);
   } catch (error) {
     next(error);
@@ -76,6 +83,8 @@ export const deleteCategory = async (
 ) => {
   try {
     const deletedCategory = await deleteCategoryService(Number(req.params.id));
+    if (!deletedCategory) return handleResponse(res, 404, "Category not found");
+
     handleResponse(res, 200, "Category deleted successfully", deletedCategory);
   } catch (error) {
     next(error);

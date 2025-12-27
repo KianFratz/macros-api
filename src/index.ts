@@ -4,18 +4,21 @@ import pool from "./config/db.js"
 import userRoutes from "./api/v1/routes/userRoutes.js";
 import { errorHandling } from "./api/v1/middlewares/errorHandler.js"
 import createUsersTable from "./api/v1/data/creatUsersTable.js";
+import createCategoryTable from "./api/v1/data/createCategoryTable.js";
+import categoryRoutes from "./api/v1/routes/categoryRoute.js";
 
 dotenv.config();
 const port = process.env.PORT || 3001;
 
 // Routes
-app.use("/v1/api", userRoutes);
+app.use("/v1/api", userRoutes, categoryRoutes);
 
 // Error handling
 app.use(errorHandling);
 
 // Create tables before starting the server
 createUsersTable();
+createCategoryTable();
 
 // Test postgres connection
 app.get("/", async (req, res) => {
