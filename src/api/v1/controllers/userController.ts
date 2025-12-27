@@ -6,19 +6,8 @@ import {
   getUserByIdService,
   updateUserService,
 } from "../models/userModel.js";
+import handleResponse from "../handler/handleResponse.js";
 
-const handleResponse = <T = null>(
-  res: Response,
-  status: number,
-  message: string,
-  data: T | null = null
-) => {
-  res.status(status).json({
-    status,
-    message,
-    data,
-  });
-};
 
 export const createUser = async (
   req: Request,
