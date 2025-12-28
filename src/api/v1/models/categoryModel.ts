@@ -2,7 +2,7 @@ import pool from "../../../config/db.js";
 
 export const createCategoryService = async (name: string) => {
   const category = await pool.query(
-    "INSERT INTO categories (name) VALUES ($1) RETURNING *",
+    "INSERT INTO category (name) VALUES ($1) RETURNING *",
     [name]
   );
 
@@ -10,29 +10,29 @@ export const createCategoryService = async (name: string) => {
 };
 
 export const getAllCategoriesService = async () => {
-  const categories = await pool.query("SELECT * FROM categories");
+  const categories = await pool.query("SELECT * FROM category");
   return categories.rows;
 };
 
-export const getCategoryByIdService = async (id: number) => {
-  const category = await pool.query("SELECT * FROM categories where id = $1", [
-    id,
-  ]);
+export const getCategoryByIdService = async (category_id: number) => {
+  const category = await pool.query("SELECT * FROM category where category_id = $1", 
+    [category_id,]
+  );
   return category.rows[0];
 };
 
-export const deleteCategoryService = async (id: number) => {
+export const deleteCategoryService = async (category_id: number) => {
   const deleteCategory = await pool.query(
-    "DELETE FROM categories where id = $1 RETURNING *",
-    [id]
+    "DELETE FROM category where category_id = $1 RETURNING *",
+    [category_id]
   );
   return deleteCategory.rows[0];
 };
 
-export const updateCategoryService = async (id: number, name: string) => {
+export const updateCategoryService = async (category_id: number, name: string) => {
   const updatedCategory = await pool.query(
-    "UPDATE categories SET name=$1 WHERE id=$2 RETURNING *",
-    [name, id]
+    "UPDATE category SET name=$1 WHERE category_id=$2 RETURNING *",
+    [name, category_id]
   );
   return updatedCategory.rows[0];
 };

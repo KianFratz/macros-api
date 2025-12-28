@@ -6,12 +6,15 @@ import { errorHandling } from "./api/v1/middlewares/errorHandler.js"
 import createUsersTable from "./api/v1/data/creatUsersTable.js";
 import createCategoryTable from "./api/v1/data/createCategoryTable.js";
 import categoryRoutes from "./api/v1/routes/categoryRoute.js";
+import foodRoutes from "./api/v1/routes/foodRoute.js";
+import { createFood } from "./api/v1/controllers/foodController.js";
+import createFoodTable from "./api/v1/data/createFoodTable.js";
 
 dotenv.config();
 const port = process.env.PORT || 3001;
 
 // Routes
-app.use("/v1/api", userRoutes, categoryRoutes);
+app.use("/v1/api", userRoutes, categoryRoutes, foodRoutes);
 
 // Error handling
 app.use(errorHandling);
@@ -19,6 +22,7 @@ app.use(errorHandling);
 // Create tables before starting the server
 createUsersTable();
 createCategoryTable();
+createFoodTable();
 
 // Test postgres connection
 app.get("/", async (req, res) => {
