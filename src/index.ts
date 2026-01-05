@@ -9,6 +9,7 @@ import categoryRoutes from "./api/v1/routes/categoryRoute.js";
 import foodRoutes from "./api/v1/routes/foodRoute.js";
 import { createFood } from "./api/v1/controllers/foodController.js";
 import createFoodTable from "./api/v1/data/createFoodTable.js";
+import createNutritionTable from "./api/v1/data/createNutritionTable.js";
 
 dotenv.config();
 const port = process.env.PORT || 3001;
@@ -23,6 +24,7 @@ app.use(errorHandling);
 createUsersTable();
 createCategoryTable();
 createFoodTable();
+createNutritionTable();
 
 // Test postgres connection
 app.get("/", async (req, res) => {
