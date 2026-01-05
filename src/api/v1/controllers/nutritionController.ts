@@ -81,21 +81,20 @@ export const updateNutrition = async (
   res: Response,
   next: NextFunction
 ) => {
-  const {
-    nutrition_id,
-    food_id,
-    calories,
-    protein,
-    carbs,
-    fat,
-    fiber,
-    sugar,
-    sodium,
-  } = req.body;
+  const { id } = req.params;
+
+  const { food_id, calories, protein, carbs, fat, fiber, sugar, sodium } =
+    req.body;
 
   try {
+    const nutritionId = Number(id);
+
+    if (isNaN(nutritionId)) {
+        return handleResponse(res, 400, "Invalid nutrition ID must be a number in the URL parameter");
+    }
+
     const updatedNutrition = await updateNutritionService(
-      Number(nutrition_id),
+      nutritionId,
       food_id,
       calories,
       protein,
@@ -105,9 +104,15 @@ export const updateNutrition = async (
       sugar,
       sodium
     );
-    if (!updatedNutrition) return handleResponse(res, 404, "Nutrition not found");
+    if (!updatedNutrition)
+      return handleResponse(res, 404, "Nutrition not found");
 
-    handleResponse(res, 200, "Nutrition updated successfully", updatedNutrition);
+    handleResponse(
+      res,
+      200,
+      "Nutrition updated successfully",
+      updatedNutrition
+    );
   } catch (error) {
     next(error);
   }
@@ -119,7 +124,16 @@ export const deleteNutrition = async (
   next: NextFunction
 ) => {
   try {
-    const nutrition = await deleteNutritionService(Number(req.params.nutrition_id));
+    const { id } = req.params;
+
+    const nutritionId = Number(id);
+
+    if (isNaN(nutritionId)) {
+        return handleResponse(res, 400, "Invalid nutrition ID must be a number in the URL parameter");
+    }
+
+    const nutrition = await deleteNutritionService(nutritionId);
+
     if (!nutrition) return handleResponse(res, 404, "Nutrition not found");
 
     handleResponse(res, 200, "Nutrition deleted successfully", nutrition);

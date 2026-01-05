@@ -7,15 +7,15 @@ import createUsersTable from "./api/v1/data/creatUsersTable.js";
 import createCategoryTable from "./api/v1/data/createCategoryTable.js";
 import categoryRoutes from "./api/v1/routes/categoryRoute.js";
 import foodRoutes from "./api/v1/routes/foodRoute.js";
-import { createFood } from "./api/v1/controllers/foodController.js";
 import createFoodTable from "./api/v1/data/createFoodTable.js";
 import createNutritionTable from "./api/v1/data/createNutritionTable.js";
+import nutritionRoutes from "./api/v1/routes/nutritionRoute.js";
 
 dotenv.config();
 const port = process.env.PORT || 3001;
 
 // Routes
-app.use("/v1/api", userRoutes, categoryRoutes, foodRoutes);
+app.use("/v1/api", userRoutes, categoryRoutes, foodRoutes, nutritionRoutes);
 
 // Error handling
 app.use(errorHandling);
