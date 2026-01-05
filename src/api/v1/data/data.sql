@@ -20,3 +20,17 @@ CREATE TABLE IF NOT EXISTS food (
     created_at TIMESTAMP DEFAULT NOW(),
     FOREIGN KEY (category_id) REFERENCES category(category_id),
 )
+
+CREATE TABLE IF NOT EXISTS nutrition (
+    nutrition_id SERIAL PRIMARY KEY,
+    food_id INTEGER NOT NULL,
+    calories INTEGER,
+    protein FLOAT,
+    fat FLOAT,
+    fiber FLOAT,
+    sugar FLOAT,
+    sodium FLOAT,
+    carbohydrates FLOAT,
+    created_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (food_id) REFERENCES food(food_id)
+)
