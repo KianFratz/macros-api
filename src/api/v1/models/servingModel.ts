@@ -1,6 +1,5 @@
 import pool from "../../../config/db.js";
 import type { Serving } from "../interfaces/types/serving.js";
-import type { User } from "../interfaces/types/user.js";
 
 export const getAllServingsService = async () => {
   const servings = await pool.query("SELECT * FROM servings");
@@ -18,6 +17,16 @@ export const createServingService = async (
   grams: number,
 ): Promise<Serving> => {
 
+    // validate food id exists
+  const food = await pool.query(
+    "SELECT food_id FROM food WHERE food_id = $1",
+    [food_id]
+  );
+
+  if (food.rows.length === 0) {
+    throw new Error(`Food with id ${food_id} does not exist`);
+  }
+
     const serving = await pool.query(
     "INSERT INTO servings (food_id, serving_name, grams) VALUES ($1, $2, $3) RETURNING *",
     [food_id, serving_name, grams]
@@ -32,10 +41,25 @@ export const updateServingService = async (
   grams: number
 ): Promise<Serving> => {
 
+    // validate food id exists
+  const food = await pool.query(
+    "SELECT food_id FROM food WHERE food_id = $1",
+    [food_id]
+  );
+
+  if (food.rows.length === 0) {
+    throw new Error(`Food with id ${food_id} does not exist`);
+  }
+
   const updatedServing = await pool.query(
     "UPDATE servings SET food_id=$1, serving_name=$2, grams=$3 WHERE serving_id=$4 RETURNING *",
     [food_id, serving_name, grams, serving_id] // id is in the last because id is equals to $3
   );
+
+  if (updatedServing.rowCount === 0) {
+    throw new Error(`Serving with id ${serving_id} does not exist`)
+  }
+  
   return updatedServing.rows[0];
 };
 
