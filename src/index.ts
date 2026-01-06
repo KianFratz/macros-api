@@ -3,19 +3,20 @@ import dotenv from "dotenv";
 import pool from "./config/db.js"
 import userRoutes from "./api/v1/routes/userRoutes.js";
 import { errorHandling } from "./api/v1/middlewares/errorHandler.js"
-import createUsersTable from "./api/v1/data/creatUsersTable.js";
+import createUsersTable from "./api/v1/data/createUsersTable.js";
 import createCategoryTable from "./api/v1/data/createCategoryTable.js";
 import categoryRoutes from "./api/v1/routes/categoryRoute.js";
 import foodRoutes from "./api/v1/routes/foodRoute.js";
 import createFoodTable from "./api/v1/data/createFoodTable.js";
 import createNutritionTable from "./api/v1/data/createNutritionTable.js";
 import nutritionRoutes from "./api/v1/routes/nutritionRoute.js";
+import servingsRoutes from "./api/v1/routes/servingRoute.js";
 
 dotenv.config();
 const port = process.env.PORT || 3001;
 
 // Routes
-app.use("/v1/api", userRoutes, categoryRoutes, foodRoutes, nutritionRoutes);
+app.use("/v1/api", userRoutes, categoryRoutes, foodRoutes, nutritionRoutes, servingsRoutes);
 
 // Error handling
 app.use(errorHandling);
