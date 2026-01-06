@@ -1,0 +1,48 @@
+import pool from "../../../config/db.js";
+import type { Serving } from "../interfaces/types/serving.js";
+import type { User } from "../interfaces/types/user.js";
+
+export const getAllServingsService = async () => {
+  const servings = await pool.query("SELECT * FROM servings");
+  return servings.rows;
+};
+
+export const getServingsByIdService = async (serving_id: number) => {
+  const serving = await pool.query("SELECT * FROM servings WHERE serving_id = $1", [serving_id]);
+  return serving.rows[0];
+};
+
+export const createServingService = async (
+  food_id: number,
+  serving_name: string,
+  grams: number,
+): Promise<Serving> => {
+
+    const serving = await pool.query(
+    "INSERT INTO servings (food_id, serving_name, grams) VALUES ($1, $2, $3) RETURNING *",
+    [food_id, serving_name, grams]
+  );
+  return serving.rows[0];
+};
+
+export const updateServingService = async (
+  serving_id: number,
+  food_id: number,
+  serving_name: string,
+  grams: number
+): Promise<Serving> => {
+
+  const updatedServing = await pool.query(
+    "UPDATE servings SET food_id=$1, serving_name=$2, grams=$3 WHERE serving_id=$4 RETURNING *",
+    [food_id, serving_name, grams, serving_id] // id is in the last because id is equals to $3
+  );
+  return updatedServing.rows[0];
+};
+
+export const deleteServingService = async (serving_id: number) => {
+  const deletedServing = await pool.query(
+    "DELETE FROM servings WHERE serving_id = $1 RETURNING *",
+    [serving_id]
+  );
+  return deletedServing.rows[0];
+};
