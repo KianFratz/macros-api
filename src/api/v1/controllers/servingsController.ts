@@ -4,20 +4,22 @@ import findServingById from "../handler/findServingById.js";
 import { createServingService, deleteServingService, getAllServingsService, getServingsByIdService, updateServingService } from "../models/servingModel.js";
 
 
-
 export const createServings = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   const {
+    serving_id,
     food_id,
     serving_name,
     grams,
   } = req.body;
 
+
   try {
-    const existingServing = await findServingById(Number(req.params.serving_id));
+
+    const existingServing = await findServingById(serving_id);
     if (existingServing) return handleResponse(res, 400, "Serving already exists");
 
     const newServing = await createServingService(

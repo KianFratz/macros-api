@@ -29,8 +29,7 @@ export const createNutrition = async (
 
   try {
     const existingNutrition = await findNutritionById(nutrition_id);
-    if (existingNutrition)
-      return handleResponse(res, 400, "Nutrition already exists");
+    if (existingNutrition) return handleResponse(res, 400, "Nutrition already exists");
 
     const newNutrition = await createNutritionService(
       food_id,
