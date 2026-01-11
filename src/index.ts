@@ -12,12 +12,13 @@ import createNutritionTable from "./api/v1/data/createNutritionTable.js";
 import nutritionRoutes from "./api/v1/routes/nutritionRoute.js";
 import servingsRoutes from "./api/v1/routes/servingRoute.js";
 import createServingsTable from "./api/v1/data/createServingsTable.js";
+import authRoutes from "./api/v1/routes/authRoute.js";
 
 dotenv.config();
 const port = process.env.PORT || 3001;
 
 // Routes
-app.use("/v1/api", userRoutes, categoryRoutes, foodRoutes, nutritionRoutes, servingsRoutes);
+app.use("/v1/api", userRoutes, categoryRoutes, foodRoutes, nutritionRoutes, servingsRoutes, authRoutes);
 
 // Error handling
 app.use(errorHandling);
