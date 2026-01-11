@@ -19,7 +19,8 @@ CREATE TABLE IF NOT EXISTS food (
     category_id INTEGER NOT NULL,
     is_verified BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT NOW(),
-    FOREIGN KEY (category_id) REFERENCES category(category_id),
+    FOREIGN KEY (category_id) REFERENCES category(category_id)
+    ON DELETE CASCADE
 )
 
 CREATE TABLE IF NOT EXISTS nutrition (
@@ -34,6 +35,7 @@ CREATE TABLE IF NOT EXISTS nutrition (
     carbs FLOAT,
     created_at TIMESTAMP DEFAULT NOW(),
     FOREIGN KEY (food_id) REFERENCES food(food_id)
+    ON DELETE CASCADE
 )
 
 CREATE TABLE IF NOT EXISTS servings (
@@ -43,4 +45,5 @@ CREATE TABLE IF NOT EXISTS servings (
     grams FLOAT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
     FOREIGN KEY (food_id) REFERENCES food(food_id)
+    ON DELETE CASCADE
 )

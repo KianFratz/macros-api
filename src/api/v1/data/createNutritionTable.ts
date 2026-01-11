@@ -11,9 +11,10 @@ const createNutritionTable = async () => {
             fiber FLOAT,
             sugar FLOAT,
             sodium FLOAT,
-            carbohydrates FLOAT,
+            carbs FLOAT,
             created_at TIMESTAMP DEFAULT NOW(),
             FOREIGN KEY (food_id) REFERENCES food(food_id)
+            ON DELETE CASCADE
         )
     `;
 

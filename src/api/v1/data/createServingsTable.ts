@@ -9,6 +9,7 @@ const createServingsTable = async () => {
             grams FLOAT NOT NULL,
             created_at TIMESTAMP DEFAULT NOW(),
             FOREIGN KEY (food_id) REFERENCES food(food_id)
+            ON DELETE CASCADE
         )
     `;
 

@@ -3,14 +3,15 @@ import pool from "../../../config/db.js";
 const createFoodTable = async () => {
     const queryText = `
         CREATE TABLE IF NOT EXISTS food (
-        food_id SERIAL PRIMARY KEY,
-        name VARCHAR(100) NOT NULL,
-        description TEXT,
-        category_id INTEGER NOT NULL,
-        is_verified BOOLEAN DEFAULT FALSE,
-        created_at TIMESTAMP DEFAULT NOW(),
-        FOREIGN KEY (category_id) REFERENCES category(category_id)
-    )
+            food_id SERIAL PRIMARY KEY,
+            name VARCHAR(100) NOT NULL,
+            description TEXT,
+            category_id INTEGER NOT NULL,
+            is_verified BOOLEAN DEFAULT FALSE,
+            created_at TIMESTAMP DEFAULT NOW(),
+            FOREIGN KEY (category_id) REFERENCES category(category_id)
+            ON DELETE CASCADE
+        )
     `;
 
     try {
