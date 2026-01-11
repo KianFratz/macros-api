@@ -14,10 +14,10 @@ export const createUser = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { name, email } = req.body;
+  const { name, email, role } = req.body;
 
   try {
-    const newUser = await createUserService(name, email);
+    const newUser = await createUserService(name, email, role);
     handleResponse(res, 201, "User created successfully", newUser);
   } catch (error) {
     next(error);
@@ -57,13 +57,14 @@ export const updateUser = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { name, email } = req.body;
+  const { name, email, role } = req.body;
 
   try {
     const updatedUser = await updateUserService(
       Number(req.params.id),
       name,
-      email
+      email,
+      role
     );
     if (!updatedUser) return handleResponse(res, 404, "User not found");
 

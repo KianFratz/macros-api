@@ -13,12 +13,13 @@ export const getUserByIdService = async (id: number) => {
 
 export const createUserService = async (
   name: string,
-  email: string
+  email: string,
+  role: string,
 ): Promise<User> => {
   // RETURNING * will return name and email columns
   const user = await pool.query(
-    "INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *",
-    [name, email]
+    "INSERT INTO users (name, email, role) VALUES ($1, $2, $3) RETURNING *",
+    [name, email, role]
   );
   return user.rows[0];
 };
@@ -26,11 +27,12 @@ export const createUserService = async (
 export const updateUserService = async (
   id: number,
   name: string,
-  email: string
+  email: string,
+  role: string,
 ): Promise<User> => {
   const updatedUser = await pool.query(
-    "UPDATE users SET name=$1, email=$2 WHERE id=$3 RETURNING *",
-    [name, email, id] // id is in the last because id is equals to $3
+    "UPDATE users SET name=$1, email=$2, role=$3 WHERE id=$4 RETURNING *",
+    [name, email, role, id] // id is in the last because id is equals to $3
   );
   return updatedUser.rows[0];
 };
