@@ -7,6 +7,7 @@ import {
   updateUserService,
 } from "../models/userModel.js";
 import handleResponse from "../handler/handleResponse.js";
+import bcrypt from "bcryptjs";
 
 
 export const createUser = async (
@@ -16,8 +17,24 @@ export const createUser = async (
 ) => {
   const { name, email, password, role } = req.body;
 
+  if (!email || !password || !name) {
+    return res.status(400).json({message: "Email and password are required"});
+  }
+
+  if (typeof password !== "string") {
+    return res.status(400).json(
+      {
+        message: "Password must be a string"
+      }
+    );
+  }
+
   try {
-    const newUser = await createUserService(name, email, password, role);
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+
+    const newUser = await createUserService(name, email, hashedPassword, role);
     handleResponse(res, 201, "User created successfully", newUser);
   } catch (error) {
     next(error);
