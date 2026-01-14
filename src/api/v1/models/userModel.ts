@@ -19,7 +19,7 @@ export const createUserService = async (
 ): Promise<User> => {
   // RETURNING * will return name and email columns
   const user = await pool.query(
-    "INSERT INTO users (name, email, role) VALUES ($1, $2, $3) RETURNING *",
+    "INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING *",
     [name, email, password, role]
   );
   return user.rows[0];
