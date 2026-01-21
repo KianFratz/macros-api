@@ -1,9 +1,11 @@
-import pool from "../../../config/db.js";
+import pool, { prisma } from "../../../config/db.js";
 import type { User } from "../interfaces/types/user.js";
 
-export const getAllUsersService = async () => {
-  const users = await pool.query("SELECT * FROM users");
-  return users.rows;
+
+export const getAllUsersService = async () =>   {
+  console.log("Testing prisma")
+  const users = await prisma.user.findMany();
+  return users;
 };
 
 export const getUserByIdService = async (id: number) => {

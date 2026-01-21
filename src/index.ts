@@ -1,6 +1,6 @@
 import app from "./server.js";
 import dotenv from "dotenv";
-import pool from "./config/db.js"
+import pool, { connectDB } from "./config/db.js"
 import userRoutes from "./api/v1/routes/userRoutes.js";
 import { errorHandling } from "./api/v1/middlewares/errorHandler.js"
 import createUsersTable from "./api/v1/data/createUsersTable.js";
@@ -16,6 +16,7 @@ import authRoutes from "./api/v1/routes/authRoute.js";
 
 dotenv.config();
 const port = process.env.PORT || 3001;
+connectDB();
 
 // Routes
 app.use("/v1/api", userRoutes, categoryRoutes, foodRoutes, nutritionRoutes, servingsRoutes, authRoutes);
@@ -41,3 +42,4 @@ app.get("/", async (req, res) => {
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 })
+
