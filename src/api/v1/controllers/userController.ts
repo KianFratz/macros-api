@@ -6,7 +6,7 @@ import {
   getUserByIdService,
   updateUserService,
 } from "../models/userModel.js";
-import handleResponse from "../handler/handleResponse.js";
+import handleResponse from "../utils/handleResponse.js";
 import bcrypt from "bcryptjs";
 
 

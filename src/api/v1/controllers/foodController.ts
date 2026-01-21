@@ -1,4 +1,4 @@
-import handleResponse from "../handler/handleResponse.js";
+import handleResponse from "../utils/handleResponse.js";
 import type { Request, Response, NextFunction } from "express";
 import { createFoodService, deleteFoodService, getAllFoodsService, getFoodByIdService, updateFoodService } from "../models/foodModel.js";
 

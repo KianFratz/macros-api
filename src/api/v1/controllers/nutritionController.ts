@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
-import handleResponse from "../handler/handleResponse.js";
+import handleResponse from "../utils/handleResponse.js";
 
-import { findNutritionById } from "../handler/findNutritionById.js";
+import { findNutritionById } from "../utils/findNutritionById.js";
 import {
   createNutritionService,
   deleteNutritionService,

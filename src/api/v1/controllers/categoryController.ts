@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import handleResponse from "../handler/handleResponse.js";
+import handleResponse from "../utils/handleResponse.js";
 import {
   createCategoryService,
   deleteCategoryService,
@@ -7,7 +7,7 @@ import {
   getCategoryByIdService,
   updateCategoryService,
 } from "../models/categoryModel.js";
-import { findCategoryByName } from "../handler/findCategoryByName.js";
+import { findCategoryByName } from "../utils/findCategoryByName.js";
 
 export const createCategory = async (
   req: Request,

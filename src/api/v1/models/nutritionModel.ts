@@ -1,5 +1,5 @@
 import pool from "../../../config/db.js";
-import findNutritionById from "../handler/findNutritionById.js";
+import findNutritionById from "../utils/findNutritionById.js";
 import type { Nutrition } from "../interfaces/types/nutrition.js";
 
 export const createNutritionService = async (

@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import type { Request, Response } from "express";
-import { findUserByEmail } from "../handler/findUserByEmail.js";
+import { findUserByEmail } from "../utils/findUserByEmail.js";
 
 export const login = async (req: Request, res: Response) => {
   try {

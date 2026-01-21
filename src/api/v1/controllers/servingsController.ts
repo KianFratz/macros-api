@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
-import handleResponse from "../handler/handleResponse.js";
-import findServingById from "../handler/findServingById.js";
+import handleResponse from "../utils/handleResponse.js";
+import findServingById from "../utils/findServingById.js";
 import { createServingService, deleteServingService, getAllServingsService, getServingsByIdService, updateServingService } from "../models/servingModel.js";
 
 
