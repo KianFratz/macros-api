@@ -16,6 +16,8 @@ import authRoutes from "./api/v1/routes/authRoute.js";
 
 dotenv.config();
 const port = process.env.PORT || 3001;
+
+// Connecting to database using PRISMA
 connectDB();
 
 // Routes

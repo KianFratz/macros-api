@@ -1,16 +1,24 @@
+import bcrypt from "bcryptjs";
 import pool, { prisma } from "../../../config/db.js";
 import type { User } from "../interfaces/types/user.js";
+import { existingUser } from "../utils/existingUser.js";
 
 
 export const getAllUsersService = async () =>   {
-  console.log("Testing prisma")
   const users = await prisma.user.findMany();
   return users;
 };
 
 export const getUserByIdService = async (id: number) => {
-  const user = await pool.query("SELECT * FROM users WHERE id = $1", [id]);
-  return user.rows[0];
+  const user = await prisma.user.findUnique({
+    where: { id },
+  })
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  return user;
 };
 
 export const createUserService = async (
@@ -19,12 +27,19 @@ export const createUserService = async (
   password: string,
   role: string,
 ): Promise<User> => {
-  // RETURNING * will return name and email columns
-  const user = await pool.query(
-    "INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING *",
-    [name, email, password, role]
-  );
-  return user.rows[0];
+
+  const user = await prisma.user.create({
+    data: { name, email, password, role}, 
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      createdAt: true
+    }
+  })
+  
+  return user;
 };
 
 export const updateUserService = async (
@@ -34,17 +49,53 @@ export const updateUserService = async (
   password: string,
   role: string,
 ): Promise<User> => {
-  const updatedUser = await pool.query(
-    "UPDATE users SET name=$1, email=$2, role=$3 WHERE id=$4 RETURNING *",
-    [name, email, password, role, id] // id is in the last because id is equals to $3
-  );
-  return updatedUser.rows[0];
+
+  // check user if does exist for efficient error handling
+  const user = await existingUser(id);
+
+  if (!user) {
+    throw new Error("User does not exist");
+  }
+
+  const updateUser = await prisma.user.update({
+    where: { id },
+    data: {
+      name,
+      email,
+      password,
+      role
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      createdAt: true,
+    }  
+  })
+
+  return updateUser;
+
+  
 };
 
 export const deleteUserService = async (id: number) => {
-  const deletedUser = await pool.query(
-    "DELETE FROM users WHERE id = $1 RETURNING *",
-    [id]
-  );
-  return deletedUser.rows[0];
+
+  // check user if does exist for efficient error handling
+  const user = await existingUser(id);
+
+  if (!user) {
+    throw new Error("User does not exist");
+  }
+
+  return await prisma.user.delete({
+    where: { id },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      createdAt: true
+    }
+  })
 };

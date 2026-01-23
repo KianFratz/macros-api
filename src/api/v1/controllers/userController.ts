@@ -33,7 +33,6 @@ export const createUser = async (
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-
     const newUser = await createUserService(name, email, hashedPassword, role);
     handleResponse(res, 201, "User created successfully", newUser);
   } catch (error) {
@@ -84,6 +83,7 @@ export const updateUser = async (
       password,
       role
     );
+    
     if (!updatedUser) return handleResponse(res, 404, "User not found");
 
     handleResponse(res, 200, "User updated successfully", updatedUser);
