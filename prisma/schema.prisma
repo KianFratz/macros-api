@@ -30,5 +30,20 @@ model Category {
   name String @unique @db.VarChar(100)
   createdAt DateTime @default(now()) @map("created_at")
 
+  foods Food[] // back relation
+
   @@map("category")
+}
+
+model Food {
+  id Int @id @default(autoincrement()) @map("food_id")
+  name String @db.VarChar(100)
+  description String? @db.Text
+  category_id Int @map("category_id")
+  is_verified Boolean @default(false) 
+  createdAt DateTime @default(now()) @map("created_at")
+
+  category Category @relation(fields: [id], references: [ id ], onDelete: Cascade)
+
+  @@map("food")
 }

@@ -1,5 +1,4 @@
 export interface Food {
-    food_id: number,
     name: string,
     description?: string | null,
     category_id: number,

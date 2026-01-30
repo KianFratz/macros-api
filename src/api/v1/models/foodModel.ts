@@ -1,16 +1,21 @@
-import pool from "../../../config/db.js";
+import pool, { prisma } from "../../../config/db.js";
 import type { Food } from "../interfaces/types/food.js";
 
 export const getAllFoodsService = async () => {
-  const foods = await pool.query("SELECT * FROM food");
-  return foods.rows;
+  const foods = await prisma.food.findMany();
+  return foods;
 };
 
-export const getFoodByIdService = async (food_id: number) => {
-  const food = await pool.query("SELECT * FROM food WHERE food_id = $1", [
-    food_id,
-  ]);
-  return food.rows[0];
+export const getFoodByIdService = async (id: number) => {
+  const food = await prisma.food.findUnique({
+    where : { id }
+  });
+
+  if (!food) {
+    throw new Error("Food not found");
+  }
+
+  return food;
 };
 
 export const createFoodService = async (
@@ -19,50 +24,107 @@ export const createFoodService = async (
   category_id: number,
   is_verified?: boolean
 ): Promise<Food> => {
-  await pool.query("BEGIN");
 
   try {
     // validate category_id exists
-    const category = await pool.query(
-      "SELECT category_id FROM category WHERE category_id = $1",
-      [category_id]
+    const category = await prisma.category.findUnique(
+      {
+        where: { id: category_id },
+      }
     );
 
-    if (category.rows.length === 0) {
+    if (!category) {
       throw new Error(`Category with id ${category_id} does not exist`);
     }
 
-    const food = await pool.query(
-      "INSERT INTO food (name, description, category_id, is_verified) VALUES ($1, $2, $3, $4) RETURNING *",
-      [name, description, category_id, is_verified]
-    );
+    const food = await prisma.food.create(
+      {
+        data: {name, description, category_id, is_verified: is_verified || false},
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          category_id: true,
+          is_verified: true,
+          createdAt: true,
+        }
+      }
+);
 
-    await pool.query("COMMIT");
-    return food.rows[0];
+    return food;
+
   } catch (error) {
-    await pool.query("ROLLBACK");
     throw error;
   }
 };
 
 export const updateFoodService = async (
-  food_id: number,
+  id: number,
   name: string,
   description: string,
   category_id: number,
   is_verified: boolean
 ): Promise<Food> => {
-  const updatedFood = await pool.query(
-    "UPDATE food SET name=$1, description=$2, category_id=$3, is_verified=$4 WHERE food_id=$5 RETURNING *",
-    [name, description, category_id, is_verified, food_id] // id is in the last because id is equals to $3
+
+  // validate food_id exists
+  const food = await prisma.food.findUnique(
+    {
+      where: { id },
+    }
   );
-  return updatedFood.rows[0];
+
+  if (!food) {
+    throw new Error(`Food with id ${id} does not exist`);
+  }
+
+  // validate category_id exists
+  const category = await prisma.category.findUnique(
+    {
+      where: { id: category_id },
+    }
+  );
+
+  if (!category) {
+    throw new Error(`Category with id ${category_id} does not exist`);
+  }
+  
+  const updatedFood = await prisma.food.update({
+    where : { id },
+    data : {
+      name,
+      description,
+      category_id,
+      is_verified
+    }
+  }
+  );
+
+  return updatedFood;
 };
 
-export const deleteFoodService = async (food_id: number) => {
-  const deletedFood = await pool.query(
-    "DELETE FROM food WHERE food_id = $1 RETURNING *",
-    [food_id]
-  );
-  return deletedFood.rows[0];
+export const deleteFoodService = async (id: number) => {
+
+  // validate food_id exists
+  const food = await prisma.food.findUnique({
+    where: { id },
+  });
+
+  if (!food) {
+    throw new Error("Food not found");
+  }
+
+  const deletedFood = await prisma.food.delete({
+    where : { id },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      category_id: true,
+      is_verified: true,
+      createdAt: true
+    }
+  });
+
+
+  return deletedFood;
 };
