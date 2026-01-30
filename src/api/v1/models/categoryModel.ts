@@ -1,38 +1,83 @@
-import pool from "../../../config/db.js";
+import pool, { prisma } from "../../../config/db.js";
 
-export const createCategoryService = async (name: string) => {
-  const category = await pool.query(
-    "INSERT INTO category (name) VALUES ($1) RETURNING *",
-    [name]
-  );
-
-  return category.rows[0];
-};
 
 export const getAllCategoriesService = async () => {
-  const categories = await pool.query("SELECT * FROM category");
-  return categories.rows;
+  const categories = await prisma.category.findMany();
+  return categories;
 };
 
-export const getCategoryByIdService = async (category_id: number) => {
-  const category = await pool.query("SELECT * FROM category where category_id = $1", 
-    [category_id,]
-  );
-  return category.rows[0];
+
+export const getCategoryByIdService = async (id: number) => {
+  const category = await prisma.category.findUnique({
+    where: { id },
+  }); 
+
+  if (!category) {
+    throw new Error("Category not found");
+  }
+
+  return category;
 };
 
-export const deleteCategoryService = async (category_id: number) => {
-  const deleteCategory = await pool.query(
-    "DELETE FROM category where category_id = $1 RETURNING *",
-    [category_id]
+
+export const createCategoryService = async (name: string) => {
+  const category = await prisma.category.create({
+    data : { name }, 
+    select: {
+      id: true,
+      name: true,
+      createdAt: true
+    }
+  }
   );
-  return deleteCategory.rows[0];
+
+  return category;
 };
 
-export const updateCategoryService = async (category_id: number, name: string) => {
-  const updatedCategory = await pool.query(
-    "UPDATE category SET name=$1 WHERE category_id=$2 RETURNING *",
-    [name, category_id]
-  );
-  return updatedCategory.rows[0];
+
+export const deleteCategoryService = async (id: number) => {
+  const category = await prisma.category.findUnique({
+    where: { id },
+  });
+
+  if (!category) {
+    throw new Error("Category not found");
+  }
+
+  const deleteCategory = await prisma.category.delete({
+    where: { id },
+    select: {
+      id: true,
+      name: true,
+      createdAt: true
+    }
+  });
+
+  return deleteCategory;
+};
+
+export const updateCategoryService = async (id: number, name: string) => {
+
+  const category = await prisma.category.findUnique({
+    where: { id },
+  });
+
+  if (!category) {
+    throw new Error("Category not found");
+  }
+
+  
+  const updatedCategory = await prisma.category.update( {
+    where : { id },
+    data : {
+      name
+    },
+    select : {
+      id: true,
+      name: true,
+      createdAt: true
+    }
+  });
+
+  return updatedCategory;
 };

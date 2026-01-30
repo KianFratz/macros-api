@@ -12,7 +12,7 @@ categoryRoutes.get("/categories/:id", getCategoryById);
 
 // Protected routes - only authenticated users with specific roles
 categoryRoutes.post("/categories", authenticate, authorize('admin', 'manager'), createCategory);
-categoryRoutes.delete("/categories/:id", authenticate, authorize('admin'), deleteCategory);
-categoryRoutes.put("/categories/:id", authenticate, authorize('admin', 'manage'), updateCategory);
+categoryRoutes.delete("/categories/:id", authenticate, authorize('admin', "manager"), deleteCategory);
+categoryRoutes.put("/categories/:id", authenticate, authorize('admin', 'manager'), updateCategory);
 
 export default categoryRoutes;
