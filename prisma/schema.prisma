@@ -45,5 +45,25 @@ model Food {
 
   category Category @relation(fields: [id], references: [ id ], onDelete: Cascade)
 
+  // relation 
+  nutritions Nutrition[]
+
   @@map("food")
+}
+
+model Nutrition {
+  id Int @id @default(autoincrement()) @map("nutrition_id")
+  food_id Int @map("food_id")
+  calories Float
+  protein Float
+  fat Float?
+  fiber Float?
+  sugar Float?
+  sodium Float?
+  carbs Float
+  createdAt DateTime @default(now()) @map("created_at")
+
+  food Food @relation(fields: [food_id], references: [ id ], onDelete: Cascade)
+
+  @@map("nutrition")
 }

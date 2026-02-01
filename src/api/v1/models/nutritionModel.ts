@@ -1,37 +1,56 @@
-import pool from "../../../config/db.js";
-import findNutritionById from "../utils/findNutritionById.js";
-import type { Nutrition } from "../interfaces/types/nutrition.js";
+import pool, { prisma } from "../../../config/db.js";
+import type { Nutrition } from "../../../generated/prisma/index.js";
 
 export const createNutritionService = async (
   food_id: number,
   calories: number,
   protein: number,
   carbs: number,
-  fat?: number,
-  fiber?: number,
-  sugar?: number,
-  sodium?: number
+  fat: number ,
+  fiber: number, 
+  sugar: number,
+  sodium: number
 ): Promise<Nutrition> => {
-  await pool.query("BEGIN");
 
   try {
     // validate food id exists
-    const food = await pool.query(
-      "SELECT food_id FROM food WHERE food_id = $1",
-      [food_id]
+    const food = await prisma.food.findUnique({
+      where: { id: food_id }
+    }
     );
 
-    if (food.rows.length === 0) {
+    if (!food) {
       throw new Error(`Food with id ${food_id} does not exist`);
     }
 
-    const nutrition = await pool.query(
-      "INSERT INTO nutrition (food_id, calories, protein, carbs, fat, fiber, sugar, sodium) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
-      [food_id, calories, protein, carbs, fat, fiber, sugar, sodium]
+    const nutrition = await prisma.nutrition.create({
+      data: {
+        food_id,
+        calories,
+        protein,
+        carbs,
+        fat,
+        fiber,
+        sugar,
+        sodium
+      }, 
+      select: {
+        id: true,
+        food_id: true,
+        calories: true,
+        protein: true,
+        carbs: true,
+        fat: true,
+        fiber: true,
+        sugar: true,
+        sodium: true,
+        createdAt: true
+      }
+    }
     );
 
-    await pool.query("COMMIT");
-    return nutrition.rows[0];
+    return nutrition;
+
   } catch (error) {
     await pool.query("ROLLBACK");
     throw error;
@@ -39,57 +58,96 @@ export const createNutritionService = async (
 };
 
 export const getAllNutritionService = async () => {
-  const nutrition = await pool.query("SELECT * FROM nutrition");
-  return nutrition.rows;
+  const nutrition = await prisma.nutrition.findMany();
+  return nutrition;
 };
 
-export const getNutritionByIdService = async (nutrition_id: number) => {
-  const nutrition = await pool.query(
-    "SELECT * FROM nutrition WHERE nutrition_id = $1",
-    [nutrition_id]
-  );
-  return nutrition.rows[0];
+export const getNutritionByIdService = async (id: number) => {
+  const nutrition = await prisma.nutrition.findUnique({
+    where: { id }
+    
+  });
+
+  if (!nutrition) {
+    throw new Error("Nutrition not found");
+  }
+
+  return nutrition;
 };
 
 export const updateNutritionService = async (
   nutrition_id: number,
-  food_id?: number,
-  calories?: number,
-  protein?: number,
-  fat?: number,
-  fiber?: number,
-  sugar?: number,
-  sodium?: number,
-  carbs?: number
+  food_id: number,
+  calories: number,
+  protein: number,
+  fat: number,
+  fiber: number,
+  sugar: number,
+  sodium: number,
+  carbs: number
 ) => {
   
   // validate food id exists
-  const food = await pool.query(
-    "SELECT food_id FROM food WHERE food_id = $1",
-    [food_id]
+  const food = await prisma.food.findUnique({
+    where: { id: food_id }
+  }
   );
 
-  if (food.rows.length === 0) {
+  if (!food) {
     throw new Error(`Food with id ${food_id} does not exist`);
   }
 
-  const updatedNutrition = await pool.query(
-    "UPDATE nutrition SET food_id=$1, calories=$2, protein=$3, fat=$4, fiber=$5, sugar=$6, sodium=$7, carbs=$8 WHERE nutrition_id=$9 RETURNING *",
-    [food_id, calories, protein, fat, fiber, sugar, sodium, carbs, nutrition_id]
+  const updatedNutrition = await prisma.nutrition.update({
+    where : { id: nutrition_id },
+    data : {
+      food_id,
+      calories,
+      protein,
+      fat,
+      fiber,
+      sugar,
+      sodium,
+      carbs
+    }
+  }
+    
   );
 
-  if (updatedNutrition.rowCount === 0) {
+  if (!updatedNutrition) {
     throw new Error(`Nutrition with id ${nutrition_id} does not exist`)
   }
 
-  return updatedNutrition.rows[0];
+  return updatedNutrition;
 };
 
 export const deleteNutritionService = async (nutrition_id: number) => {
-  const deletedNutrition = await pool.query(
-    "DELETE FROM nutrition WHERE nutrition_id = $1 RETURNING *",
-    [nutrition_id]
+  if (!nutrition_id) {
+    throw new Error("Nutrition id is required");
+  }
+
+  const isNutritionExist = await prisma.nutrition.findUnique({
+    where: { id: nutrition_id },
+  });
+
+  if (!isNutritionExist) {
+    throw new Error("Nutrition not found");
+  }
+
+  const deletedNutrition = await prisma.nutrition.delete({
+    where : { id: nutrition_id },
+    select : {
+      id: true,
+      food_id: true,
+      calories: true,
+      protein: true,
+      fat: true,
+      fiber: true,
+      sugar: true,
+      sodium: true,
+      carbs: true,
+    }
+  }
   );
 
-  return deletedNutrition.rows[0];
+  return deletedNutrition;
 };
