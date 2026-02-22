@@ -2,6 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import handleResponse from "../utils/handleResponse.js";
 import findServingById from "../utils/findServingById.js";
 import { createServingService, deleteServingService, getAllServingsService, getServingsByIdService, updateServingService } from "../models/servingModel.js";
+import { prisma } from "../../../config/db.js";
 
 
 export const createServings = async (
@@ -10,7 +11,6 @@ export const createServings = async (
   next: NextFunction
 ) => {
   const {
-    serving_id,
     food_id,
     serving_name,
     grams,
@@ -18,9 +18,19 @@ export const createServings = async (
 
 
   try {
+    
+    // prevent duplicate serving names
+    const existingServing = await prisma.serving.findFirst({
+      where: {
+        serving_name,
+      },
+    });
 
-    const existingServing = await findServingById(serving_id);
-    if (existingServing) return handleResponse(res, 400, "Serving already exists");
+    if (existingServing) return handleResponse(res, 400, "Serving name already exists");
+
+    if (!food_id || !serving_name || !grams) {
+      return handleResponse(res, 400, "All fields are required");
+    }
 
     const newServing = await createServingService(
       food_id,

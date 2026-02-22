@@ -47,8 +47,21 @@ model Food {
 
   // relation 
   nutritions Nutrition[]
+  servings Serving[]
 
   @@map("food")
+}
+
+model Serving {
+  id Int @id @default(autoincrement()) @map("serving_id")
+  food_id Int @map("food_id")
+  serving_name String @db.VarChar(100)
+  grams Float
+  createdAt DateTime @default(now()) @map("created_at")
+
+  food Food @relation(fields: [food_id], references: [id], onDelete: Cascade)
+
+  @@map("servings")
 }
 
 model Nutrition {

@@ -1,17 +1,16 @@
-import pool from "../../../config/db.js";
+import { prisma } from "../../../config/db.js";
 import type { Serving } from "../interfaces/types/serving.js";
 
 export const getAllServingsService = async () => {
-  const servings = await pool.query("SELECT * FROM servings");
-  return servings.rows;
+  const servings = await prisma.serving.findMany();
+  return servings;
 };
 
 export const getServingsByIdService = async (serving_id: number) => {
-  const serving = await pool.query(
-    "SELECT * FROM servings WHERE serving_id = $1",
-    [serving_id]
-  );
-  return serving.rows[0];
+  const serving = await prisma.serving.findUnique({
+    where: { id: serving_id },
+  });
+  return serving ?? null;
 };
 
 export const createServingService = async (
@@ -29,19 +28,18 @@ export const createServingService = async (
   }
 
   // validate food id exists
-  const food = await pool.query("SELECT food_id FROM food WHERE food_id = $1", [
-    food_id,
-  ]);
+  const food = await prisma.food.findUnique({
+    where: { id: food_id },
+  });
 
-  if (food.rows.length === 0) {
+  if (!food) {
     throw new Error(`Food with id ${food_id} does not exist`);
   }
 
-  const serving = await pool.query(
-    "INSERT INTO servings (food_id, serving_name, grams) VALUES ($1, $2, $3) RETURNING *",
-    [food_id, serving_name, grams]
-  );
-  return serving.rows[0];
+  const serving = await prisma.serving.create({
+    data: { food_id, serving_name, grams },
+  });
+  return serving;
 };
 
 export const updateServingService = async (
@@ -50,31 +48,43 @@ export const updateServingService = async (
   serving_name: string,
   grams: number
 ): Promise<Serving> => {
-  // validate food id exists
-  const food = await pool.query("SELECT food_id FROM food WHERE food_id = $1", [
-    food_id,
-  ]);
+  // validate serving exists
+  const existingServing = await prisma.serving.findUnique({
+    where: { id: serving_id },
+  });
 
-  if (food.rows.length === 0) {
-    throw new Error(`Food with id ${food_id} does not exist`);
-  }
-
-  const updatedServing = await pool.query(
-    "UPDATE servings SET food_id=$1, serving_name=$2, grams=$3 WHERE serving_id=$4 RETURNING *",
-    [food_id, serving_name, grams, serving_id] // id is in the last because id is equals to $3
-  );
-
-  if (updatedServing.rowCount === 0) {
+  if (!existingServing) {
     throw new Error(`Serving with id ${serving_id} does not exist`);
   }
 
-  return updatedServing.rows[0];
+  // validate food id exists
+  const food = await prisma.food.findUnique({
+    where: { id: food_id },
+  });
+
+  if (!food) {
+    throw new Error(`Food with id ${food_id} does not exist`);
+  }
+
+  const updatedServing = await prisma.serving.update({
+    where: { id: serving_id },
+    data: { food_id, serving_name, grams },
+  });
+
+  return updatedServing;
 };
 
 export const deleteServingService = async (serving_id: number) => {
-  const deletedServing = await pool.query(
-    "DELETE FROM servings WHERE serving_id = $1 RETURNING *",
-    [serving_id]
-  );
-  return deletedServing.rows[0];
+  const existingServing = await prisma.serving.findUnique({
+    where: { id: serving_id },
+  });
+
+  if (!existingServing) {
+    throw new Error(`Serving with id ${serving_id} does not exist`);
+  }
+
+  const deletedServing = await prisma.serving.delete({
+    where: { id: serving_id },
+  });
+  return deletedServing;
 };
